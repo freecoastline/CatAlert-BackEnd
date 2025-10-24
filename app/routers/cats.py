@@ -1,0 +1,17 @@
+from fastapi import APIRouter
+from app.models.cat import Cat
+import uuid
+
+router = APIRouter()
+
+cats_db = []
+
+@router.post("/api/cats")
+def create_cat(cat: Cat):
+    cat.id = str(uuid.uuid4())
+    cats_db.append(cat)
+    return cat
+
+@router.get("/api/cats")
+def get_cats():
+    return cats_db
