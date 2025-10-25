@@ -1,5 +1,4 @@
-from fastapi import APIRouter
-from fastapi import HTTPException
+from fastapi import APIRouter, HTTPException
 from app.models.cat import Cat
 import uuid
 
@@ -22,4 +21,4 @@ def get_cat(id: str):
     for cat in cats_db:
         if cat.id == id:
             return cat
-    return HTTPException(status_code=404, detail= "Cat not found")
+    raise HTTPException(status_code=404, detail= "Cat not found")
