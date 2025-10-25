@@ -9,3 +9,11 @@ class Cat(BaseModel):
     birth_method: Optional[str] = None
     description: Optional[str] = None
     health_status: Optional[str] = None
+
+class CatUpdate(BaseModel):
+    name: Optional[str] = None
+    breed: Optional[str] = None
+    gender: Optional[str] = None
+    birth_method: Optional[str] = None
+    description: Optional[str] = None
+    health_status: Optional[str] = None
