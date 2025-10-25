@@ -33,3 +33,13 @@ def update_cat(id: str, cat_update: CatUpdate):
                 setattr(cat, key, value)
             return cat
     raise HTTPException(status_code=404, detail="Cat not found")
+
+@router.delete("/api/cats/{id}")
+def delete_cat(id: str):
+    for index, cat in enumerate(cats_db):
+        if cat.id == id:
+            del cats_db[index]
+            return {"message": "Cat deleted successfully"}
+    raise HTTPException(status_code=404, detail="Cat not found")
+
+
