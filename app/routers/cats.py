@@ -15,36 +15,44 @@ def create_cat(cat: Cat, db: Session = Depends(get_db)):
     db_cat = CatDB(**cat.dict())
     db.add(db_cat)
     db.commit()
-    return cat
+    db.refresh(db_cat)
+    return db_cat
 
 @router.get("/api/cats")
-def get_cats():
-    return cats_db
+def get_cats(db: Session = Depends(get_db)):
+    cats = db.query(CatDB).all()
+    return cats
 
 @router.get("/api/cats/{id}")
-def get_cat(id: str):
-    for cat in cats_db:
-        if cat.id == id:
-            return cat
-    raise HTTPException(status_code=404, detail= "Cat not found")
-
+def get_cat(id: str, db: Session = Depends(get_db)):
+    cat = db.query(CatDB).filter(CatDB.id == id).first()
+    if cat is None:
+        raise HTTPException(status_code=404, detail= "Cat not found")       
+    return cat
+    
 @router.put("/api/cats/{id}")
-def update_cat(id: str, cat_update: CatUpdate):
-    for cat in cats_db:
-        if cat.id == id:
-            update_data = cat_update.dict(exclude_unset=True)
+def update_cat(id: str, cat_update: CatUpdate, db: Session = Depends(get_db)):
+    cat = db.query(CatDB).filter(CatDB.id == id).first()
+    if cat is None:
+        raise HTTPException(status_code=404, detail="Cat not found")
+    
+    update_data = cat_update.dict(exclude_unset=True)
 
-            for key, value in update_data.items():
-                setattr(cat, key, value)
-            return cat
-    raise HTTPException(status_code=404, detail="Cat not found")
+    for key, value in update_data.items():
+        setattr(cat, key, value)
+
+    db.commit()
+    db.refresh(cat)
+    return cat
 
 @router.delete("/api/cats/{id}")
-def delete_cat(id: str):
-    for index, cat in enumerate(cats_db):
-        if cat.id == id:
-            del cats_db[index]
-            return {"message": "Cat deleted successfully"}
-    raise HTTPException(status_code=404, detail="Cat not found")
+def delete_cat(id: str, db: Session = Depends(get_db)):
+    cat = db.query(CatDB).filter(CatDB.id == id).first()
+    if cat is None:
+        raise HTTPException(status_code=404, detail="Cat not found")
+    db.delete(cat)
+    db.commit()
+    
+    return {"message": "Cat deleted successfully"}
 
 
