@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models.cat import CatDB
 from app.models.cat import Cat, CatUpdate
 import uuid
 
@@ -7,9 +10,11 @@ router = APIRouter()
 cats_db = []
 
 @router.post("/api/cats")
-def create_cat(cat: Cat):
+def create_cat(cat: Cat, db: Session = Depends(get_db)):
     cat.id = str(uuid.uuid4())
-    cats_db.append(cat)
+    db_cat = CatDB(**cat.dict())
+    db.add(db_cat)
+    db.commit()
     return cat
 
 @router.get("/api/cats")
