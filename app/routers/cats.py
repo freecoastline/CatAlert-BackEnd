@@ -7,8 +7,6 @@ import uuid
 
 router = APIRouter()
 
-cats_db = []
-
 @router.post("/api/cats")
 def create_cat(cat: Cat, db: Session = Depends(get_db)):
     cat.id = str(uuid.uuid4())
