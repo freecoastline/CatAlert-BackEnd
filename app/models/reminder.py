@@ -3,6 +3,12 @@ from typing import Optional, List
 from app.database import Base
 from sqlalchemy.sql import func
 from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey
+from pydantic import ValidationError
+import json
+
+def _serialize_times(times: List["ReminderTime"]) -> str:
+    return json.dumps([time.model_dump() for time in times])
+
 
 class ReminderTime(BaseModel):
     hour: int
