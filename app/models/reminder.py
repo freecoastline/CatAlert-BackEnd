@@ -41,3 +41,4 @@ class ReminderDB(Base):
     is_enabled = Column(Boolean, default=True)
     scheduled_times = Column(String, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
+    
