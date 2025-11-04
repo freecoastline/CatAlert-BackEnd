@@ -13,3 +13,8 @@ def create_reminder(reminder: Reminder, db: Session = Depends(get_db)):
     serialized_times = _serialize_times(reminder.scheduled_times)
     reminder_data = reminder.model_dump()
     reminder_data["scheduled_times"] = serialized_times
+    db_reminder = ReminderDB(**reminder_data)
+    db.add(db_reminder)
+    db.commit()
+    db.refresh(db_reminder)
+    return db_reminder
