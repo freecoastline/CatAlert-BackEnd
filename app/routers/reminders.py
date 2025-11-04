@@ -11,4 +11,5 @@ router = APIRouter()
 def create_reminder(reminder: Reminder, db: Session = Depends(get_db)):
     reminder.id = str(uuid.uuid4())
     serialized_times = _serialize_times(reminder.scheduled_times)
-    
+    reminder_data = reminder.model_dump()
+    reminder_data["scheduled_times"] = serialized_times
