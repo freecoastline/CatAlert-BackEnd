@@ -24,9 +24,9 @@ def get_reminders(db: Session = Depends(get_db)):
     reminders = db.query(ReminderDB).all()
     return reminders
 
-@router.get("/api/reminder/{id}")
+@router.get("/api/reminders/{id}")
 def get_reminder(id: str, db: Session = Depends(get_db)):
-    reminder = db.query(ReminderDB).filter(ReminderDB.cat_id == id).first()
+    reminder = db.query(ReminderDB).filter(ReminderDB.id == id).first()
     if reminder is None:
         raise HTTPException(status_code=404, detail="Reminder not find")
     return reminder
