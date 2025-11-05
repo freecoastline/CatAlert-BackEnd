@@ -18,3 +18,8 @@ def create_reminder(reminder: Reminder, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_reminder)
     return db_reminder
+
+@router.get("/api/reminders")
+def get_reminders(db: Session = Depends(get_db)):
+    reminders = db.query(ReminderDB).all()
+    return reminders
