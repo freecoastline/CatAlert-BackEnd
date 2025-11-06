@@ -30,3 +30,18 @@ def get_reminder(id: str, db: Session = Depends(get_db)):
     if reminder is None:
         raise HTTPException(status_code=404, detail="Reminder not find")
     return reminder
+
+@router.put("/api/reminders/{id}")
+def update_reminder(id: str, reminder_update: ReminderUpdate, db: Session = Depends(get_db)):
+    reminder = db.query(ReminderDB).filter(ReminderDB.id == id).first()
+    if reminder is None:
+        raise HTTPException(status_code=404, detail="Reminder not found")
+    update_data = reminder_update.model_dump(exclude_unset=True)
+    if "scheduled_times" in update_data:
+        update_data["scheduled_times"] = _serialize_times(update_data["scheduled_times"])
+    for key, value in update_data.items():
+        setattr(reminder, key, value)
+    db.commit()
+    db.refresh(reminder)
+    return reminder
+    
