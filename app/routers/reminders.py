@@ -54,3 +54,12 @@ def toggle_reminder(id: str, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(reminder)
     return reminder
+
+@router.delete("/api/reminders/{id}")
+def delete_reminder(id: str, db: Session = Depends(get_db)):
+    reminder = db.query(ReminderDB).filter(ReminderDB.id == id).first()
+    if reminder is None:
+        raise HTTPException(status_code=404, detail="reminder is not found")
+    db.delete(reminder)
+    db.commit()
+    return {"message": "Reminder is deleted successfully"}
