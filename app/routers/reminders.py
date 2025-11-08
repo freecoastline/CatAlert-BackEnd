@@ -44,4 +44,13 @@ def update_reminder(id: str, reminder_update: ReminderUpdate, db: Session = Depe
     db.commit()
     db.refresh(reminder)
     return reminder
-    
+
+@router.put("/api/reminders/{id}/toggle")
+def toggle_reminder(id: str, db: Session = Depends(get_db)):
+    reminder = db.query(ReminderDB).filter(ReminderDB.id == id).first()
+    if reminder is None:
+        raise HTTPException(status_code=404, detail="reminder not found")
+    reminder.is_enabled = not reminder.is_enabled
+    db.commit()
+    db.refresh(reminder)
+    return reminder
