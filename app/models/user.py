@@ -5,16 +5,17 @@ from sqlalchemy import Column, String, DateTime, ForeignKey
 from sqlalchemy.sql import func
 
 class UserCreate(BaseModel):
-    id: str
+    password: str
     username: Optional[str] = None
     email: str
 
 class UserDB(Base):
-    id: str
-    username: Optional[str] = None
-    email: str
-    hashed_password: str
-    rold: str
-    is_active: bool
-    created_at: str
+    __tablename__ = "users"
+    id =  Column(String, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String,nullable=False )
+    hashed_password = Column(String, nullable=False)
+    role = Column(String, default="user")
+    is_active = Column(bool, default=True)
+    created_at = Column(DateTime, nullable=False)
     
