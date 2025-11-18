@@ -40,8 +40,14 @@ def login(username: str, password: str, db: Session = Depends(get_db)):
     hashed = hash_password(password)
     if not verify_password(password, hashed):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户名或密码错误")
-    
-    
+    token_data = {"sub": existing_user.id}
+    access_token = create_access_token(token_data)
+    refresh_token = create_refresh_token(token_data)
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
     
     
     
