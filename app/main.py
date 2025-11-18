@@ -3,6 +3,7 @@ from app.routers import cats, reminders, auth
 from app.database import engine, Base
 from app.models import cat
 from app.models import reminder
+from app.models import user
 
 app = FastAPI(title = "CatAlert API")
 Base.metadata.create_all(bind=engine)
