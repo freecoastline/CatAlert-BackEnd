@@ -35,10 +35,9 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 @router.post("/api/auth/login")
 def login(username: str, password: str, db: Session = Depends(get_db)):
     existing_user = db.query(UserDB).filter(UserDB.username == username).first()
-    if existing_user:
+    if existing_user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户名或密码错误")
-    hashed = hash_password(password)
-    if not verify_password(password, hashed):
+    if not verify_password(password, existing_user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户名或密码错误")
     token_data = {"sub": existing_user.id}
     access_token = create_access_token(token_data)
