@@ -47,9 +47,32 @@ def login(username: str, password: str, db: Session = Depends(get_db)):
         "refresh_token": refresh_token,
         "token_type": "bearer"
     }
-    
-    
-    
+
+@router.post("/api/auth/refresh")
+def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
+    try:
+        payload = verify_token(refresh_token)
+        user_id = payload.get("sub")
+        
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户密码错误")
+        
+        user = db.query(UserDB).filter(UserDB.id == user_id).first()
+        
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户密码错误")
+
+        new_access_token = create_access_token({"sub": user.id})
+        
+        return {
+            "access_token": new_access_token,
+            "token_type": "bearer"
+        }
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired refresh Token")
+        
+        
+
 @router.get("/api/auth/me")
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
