@@ -7,6 +7,7 @@ from app.models.user import User, UserCreate, UserDB
 from app.utils.security import hash_password, verify_password
 from app.utils.jwt import create_access_token, create_refresh_token, verify_token
 from app.utils.auth import get_current_user
+from jose import JWSError
 
 router = APIRouter()
 
@@ -49,18 +50,18 @@ def login(username: str, password: str, db: Session = Depends(get_db)):
     }
 
 @router.post("/api/auth/refresh")
-def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
+def refresh_access_token(refresh_token: str, db: Session = Depends(get_db)):
     try:
         payload = verify_token(refresh_token)
         user_id = payload.get("sub")
         
         if user_id is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户密码错误")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户不存在")
         
         user = db.query(UserDB).filter(UserDB.id == user_id).first()
         
         if user is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户密码错误")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token缺少用户信息")
 
         new_access_token = create_access_token({"sub": user.id})
         
