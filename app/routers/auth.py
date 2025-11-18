@@ -32,6 +32,19 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
         "user": User.model_validate(new_user)
     }
 
+@router.post("/api/auth/login")
+def login(username: str, password: str, db: Session = Depends(get_db)):
+    existing_user = db.query(UserDB).filter(UserDB.username == username).first()
+    if existing_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户名或密码错误")
+    hashed = hash_password(password)
+    if not verify_password(password, hashed):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="用户名或密码错误")
+    
+    
+    
+    
+    
 @router.get("/api/auth/me")
 def get_me(current_user: User = Depends(get_current_user)):
     return current_user
