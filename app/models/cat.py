@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from app.database import Base
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, ForeignKey
 
 class Cat(BaseModel):
     id: Optional[str] = None
@@ -23,7 +23,8 @@ class CatUpdate(BaseModel):
 class CatDB(Base):
     __tablename__ = "cats"
 
-    id = Column(String, primary_key=True, index=True)
+    id = Column(String ,primary_key=True, index=True)
+    owner_id = Column(String, ForeignKey("users.id"), nullable=False)
     name = Column(String, nullable=False)
     breed = Column(String, nullable=True)
     gender = Column(String, nullable=True)
