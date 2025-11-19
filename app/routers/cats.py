@@ -3,14 +3,18 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.cat import CatDB
 from app.models.cat import Cat, CatUpdate
+from app.models.user import User
+from app.utils.auth import get_current_user
 import uuid
 
 router = APIRouter()
 
 @router.post("/api/cats")
-def create_cat(cat: Cat, db: Session = Depends(get_db)):
+def create_cat(cat: Cat, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     cat.id = str(uuid.uuid4())
-    db_cat = CatDB(**cat.dict())
+    cat_data = cat.model_dump()
+    cat_data["owner_id"] = current_user.id
+    db_cat = CatDB(**cat.model_dump())
     db.add(db_cat)
     db.commit()
     db.refresh(db_cat)
