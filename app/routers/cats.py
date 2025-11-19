@@ -26,10 +26,12 @@ def get_cats(db: Session = Depends(get_db), current_user: User = Depends(get_cur
     return cats
 
 @router.get("/api/cats/{id}")
-def get_cat(id: str, db: Session = Depends(get_db)):
+def get_cat(id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     cat = db.query(CatDB).filter(CatDB.id == id).first()
     if cat is None:
         raise HTTPException(status_code=404, detail= "Cat not found")       
+    if cat.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail= "Not authorized to access this cat")       
     return cat
     
 @router.put("/api/cats/{id}")
