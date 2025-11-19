@@ -14,7 +14,7 @@ def create_cat(cat: Cat, db: Session = Depends(get_db), current_user: User = Dep
     cat.id = str(uuid.uuid4())
     cat_data = cat.model_dump()
     cat_data["owner_id"] = current_user.id
-    db_cat = CatDB(**cat.model_dump())
+    db_cat = CatDB(**cat_data.model_dump())
     db.add(db_cat)
     db.commit()
     db.refresh(db_cat)
