@@ -51,10 +51,12 @@ def update_cat(id: str, cat_update: CatUpdate, db: Session = Depends(get_db), cu
     return cat
 
 @router.delete("/api/cats/{id}")
-def delete_cat(id: str, db: Session = Depends(get_db)):
+def delete_cat(id: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     cat = db.query(CatDB).filter(CatDB.id == id).first()
     if cat is None:
         raise HTTPException(status_code=404, detail="Cat not found")
+    if cat.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail= "Not authorized to access this cat")       
     db.delete(cat)
     db.commit()
     
