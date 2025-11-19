@@ -35,12 +35,13 @@ def get_cat(id: str, db: Session = Depends(get_db), current_user: User = Depends
     return cat
     
 @router.put("/api/cats/{id}")
-def update_cat(id: str, cat_update: CatUpdate, db: Session = Depends(get_db)):
+def update_cat(id: str, cat_update: CatUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     cat = db.query(CatDB).filter(CatDB.id == id).first()
     if cat is None:
         raise HTTPException(status_code=404, detail="Cat not found")
-    
-    update_data = cat_update.dict(exclude_unset=True)
+    if cat.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail= "Not authorized to access this cat")       
+    update_data = cat_update.model_dump(exclude_unset=True)
 
     for key, value in update_data.items():
         setattr(cat, key, value)
