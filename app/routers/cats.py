@@ -14,15 +14,15 @@ def create_cat(cat: Cat, db: Session = Depends(get_db), current_user: User = Dep
     cat.id = str(uuid.uuid4())
     cat_data = cat.model_dump()
     cat_data["owner_id"] = current_user.id
-    db_cat = CatDB(**cat_data.model_dump())
+    db_cat = CatDB(**cat_data)
     db.add(db_cat)
     db.commit()
     db.refresh(db_cat)
     return db_cat
 
 @router.get("/api/cats")
-def get_cats(db: Session = Depends(get_db)):
-    cats = db.query(CatDB).all()
+def get_cats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    cats = db.query(CatDB).filter(CatDB.owner_id == current_user.id).all()
     return cats
 
 @router.get("/api/cats/{id}")
