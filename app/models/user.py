@@ -1,9 +1,9 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_serializer
 from app.database import Base
 from typing import Optional
 from sqlalchemy import Column, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.sql import func
-from datetime import datetime
+from datetime import datetime,timezone
 
 class UserCreate(BaseModel):
     password: str
@@ -17,6 +17,11 @@ class User(BaseModel):
     role: str
     is_active: bool
     created_at: datetime
+    @field_serializer('created_at')
+    def serialize_dt(self, dt: datetime):
+        if dt and dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.isoformat() if dt else None
     class Config: 
         from_attributes = True
 
