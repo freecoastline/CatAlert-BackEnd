@@ -15,7 +15,7 @@ router = APIRouter()
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(UserDB).filter((UserDB.username == user_data.username) | (UserDB.email == user_data.email)).first()
     if existing_user:
-        raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail="用户名已存在")
+        raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail="用户名或邮箱已存在")
     hashed = hash_password(user_data.password)
     new_user = UserDB(
         id=str(uuid.uuid4()),
