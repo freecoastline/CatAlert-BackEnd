@@ -9,6 +9,7 @@ class UserCreate(BaseModel):
     password: str
     username: str
     email: EmailStr
+    phone_number: str
 
 class User(BaseModel):
     id: str
@@ -16,6 +17,8 @@ class User(BaseModel):
     email: str
     role: str
     is_active: bool
+    phone_number: Optional[str] = None
+    phone_verified: bool = False
     created_at: datetime
     @field_serializer('created_at')
     def serialize_dt(self, dt: datetime):
@@ -34,5 +37,7 @@ class UserDB(Base):
     role = Column(String, default="user", nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    phone_number = Column(String, nullable=False, unique=True)
+    phone_verified = Column(Boolean, default=False)
 
     
