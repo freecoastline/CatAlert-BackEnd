@@ -21,7 +21,7 @@ class ActivityResponse(BaseModel):
     cat_id: str
     type: str
     schedule_time: datetime
-    comlete_time: datetime
+    complete_time: datetime
     @field_serializer('schedule_time')
     def serialize_dt(self, dt: datetime):
         if dt and dt.tzinfo is None:
