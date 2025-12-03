@@ -19,3 +19,9 @@ def get_activities(db: Session = Depends(get_db)):
         ActivityResponse.model_validate(activity)
         for activity in activities
     ]
+
+@router.get("/api/activity/{id}")
+def get_activity(id: str, db: Session = Depends(get_db)):
+    activity = db.query(ActivityDB).filter(ActivityDB.id == id).first()
+    if activity is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="activity　not found!")
