@@ -1,7 +1,7 @@
 from fastapi import HTTPException, APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models.reminder import Reminder, ReminderDB, ReminderUpdate, _serialize_times
+from app.models.reminder import Reminder, ReminderDB, ReminderUpdate, _serialize_times, _deserialize_times, ReminderResponse
 import uuid
 import json
 
@@ -22,7 +22,12 @@ def create_reminder(reminder: Reminder, db: Session = Depends(get_db)):
 @router.get("/api/reminders")
 def get_reminders(db: Session = Depends(get_db)):
     reminders = db.query(ReminderDB).all()
-    return reminders
+    return [
+        ReminderResponse(
+            **reminder.__dict__
+        )
+        for reminder in reminders
+    ]
 
 @router.get("/api/reminders/{id}")
 def get_reminder(id: str, db: Session = Depends(get_db)):

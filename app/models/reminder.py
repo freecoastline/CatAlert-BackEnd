@@ -8,12 +8,13 @@ import json
 
 def _serialize_times(times: List["ReminderTime"]) -> str:
     return json.dumps([time.model_dump() for time in times])
-
-
 class ReminderTime(BaseModel):
     hour: int
     minute: int
 
+def _deserialize_times(times_str: str) -> List[ReminderTime]:
+    times_data = json.loads(times_str)
+    return [ReminderTime(**time) for time in times_data]
 class Reminder(BaseModel):
     id: Optional[str] = None
     cat_id: str
@@ -23,6 +24,18 @@ class Reminder(BaseModel):
     is_enabled: bool = True
     created_at: Optional[str] = None
     scheduled_times: List[ReminderTime]
+
+class ReminderResponse(BaseModel):
+    id: Optional[str] = None
+    cat_id: str
+    title: str
+    type: str
+    frequency: str
+    is_enabled: bool = True
+    created_at: Optional[str] = None
+    scheduled_times: List[ReminderTime]
+    class Config:
+        from_attributes = True
 
 class ReminderUpdate(BaseModel):
     title: Optional[str] = None
