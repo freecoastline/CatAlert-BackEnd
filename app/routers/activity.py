@@ -3,10 +3,19 @@ from sqlalchemy.orm import Session
 import uuid
 
 from app.database import get_db
-from app.models.user import User, UserCreate, UserDB
+from app.models.activity import Activity, ActivityDB, ActivityResponse, ActivityUpdate
 from app.utils.security import hash_password, verify_password
 from app.utils.jwt import create_access_token, create_refresh_token, verify_token
 from app.utils.auth import get_current_user
 from jose import JWTError
 
 router = APIRouter()
+
+
+@router.get("/api/activity")
+def get_activities(db: Session = Depends(get_db)):
+    activities = db.query(ActivityDB).all()
+    return [
+        ActivityResponse.model_validate(activity)
+        for activity in activities
+    ]
