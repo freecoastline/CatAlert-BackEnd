@@ -23,9 +23,7 @@ def create_reminder(reminder: Reminder, db: Session = Depends(get_db)):
 def get_reminders(db: Session = Depends(get_db)):
     reminders = db.query(ReminderDB).all()
     return [
-        ReminderResponse(
-            **reminder.__dict__
-        )
+        ReminderResponse.model_validate(reminder)
         for reminder in reminders
     ]
 

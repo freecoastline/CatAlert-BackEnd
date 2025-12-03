@@ -1,10 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional, List
 from app.database import Base
 from sqlalchemy.sql import func
 from sqlalchemy import Column, String, Boolean, DateTime, ForeignKey
 from pydantic import ValidationError
 import json
+from datetime import datetime
 
 def _serialize_times(times: List["ReminderTime"]) -> str:
     return json.dumps([time.model_dump() for time in times])
@@ -32,8 +33,14 @@ class ReminderResponse(BaseModel):
     type: str
     frequency: str
     is_enabled: bool = True
-    created_at: Optional[str] = None
+    created_at: Optional[datetime] = None
     scheduled_times: List[ReminderTime]
+    @field_validator('scheduled_times', mode="before")
+    @classmethod
+    def deseraialize_times(cls, v):
+        if isinstance(v, str):
+            return _deserialize_times(v)
+        return v
     class Config:
         from_attributes = True
 
