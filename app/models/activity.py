@@ -44,3 +44,5 @@ class ActivityDB(Base):
     schedule_time = Column(DateTime(timezone=True), nullable=False)
     complete_time = Column(DateTime(timezone=True), nullable=True)
     status = Column(String, nullable=False)
+    class Config:
+        from_attributes = True

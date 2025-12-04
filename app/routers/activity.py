@@ -27,7 +27,15 @@ def get_activity(id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="activity　not found!")
     return ActivityResponse.model_validate(activity)
 
-
+@router.post("/api/activity")
+def create_activity(activity: Activity, db: Session = Depends(get_db)):
+    activity.id = str(uuid.uuid4())
+    activity_data = activity.model_dump()
+    db_activity = ActivityDB(**activity_data)
+    db.add(db_activity)
+    db.commit()
+    db.refresh(db_activity)
+    return db_activity
 
 @router.delete("/api/activity/{id}")
 def delete_activity(id: str, db: Session = Depends(get_db)):
@@ -36,4 +44,4 @@ def delete_activity(id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="activity not found")
     db.delete(activity)
     db.commit()
-    return {"message": "activity delet succcess!"}
+    return {"message": "activity deleted successfully!!"}
