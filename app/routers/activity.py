@@ -37,6 +37,18 @@ def create_activity(activity: Activity, db: Session = Depends(get_db)):
     db.refresh(db_activity)
     return db_activity
 
+@router.put("/api/activity/{id}")
+def update_activity(id: str, activity_update: ActivityUpdate, db: Session = Depends(get_db)):
+    activity = db.query(ActivityDB).filter(ActivityDB.id == id).first()
+    if activity is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="activity not found")
+    activity_update_data = activity_update.model_dump()
+    for key, value in activity_update_data.items():
+        setattr(activity, key, value)
+    db.commit()
+    db.refresh(activity)
+    return activity
+
 @router.delete("/api/activity/{id}")
 def delete_activity(id: str, db: Session = Depends(get_db)):
     activity = db.query(ActivityDB).filter(ActivityDB.id == id).first()
