@@ -26,3 +26,14 @@ def get_activity(id: str, db: Session = Depends(get_db)):
     if activity is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="activity　not found!")
     return ActivityResponse.model_validate(activity)
+
+
+
+@router.delete("/api/activity/{id}")
+def delete_activity(id: str, db: Session = Depends(get_db)):
+    activity = db.query(ActivityDB).filter(ActivityDB.id == id).first()
+    if activity is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="activity not found")
+    db.delete(activity)
+    db.commit()
+    return {"message": "activity delet succcess!"}
